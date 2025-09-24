@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHelper - Student Quiz Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading State -->
+        <div id="loading" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Loading StudyHelper...</p>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen hidden">
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="login-header">
+                        <h1>StudyHelper</h1>
+                        <p>Your personalized learning companion</p>
+                    </div>
+                    
+                    <form id="login-form" class="login-form">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                        
+                        <div class="demo-accounts">
+                            <p>Demo Accounts:</p>
+                            <button type="button" class="btn btn-outline" onclick="fillDemoStudent()">Student Demo</button>
+                            <button type="button" class="btn btn-outline" onclick="fillDemoOwner()">Owner Demo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Dashboard -->
+        <div id="student-dashboard" class="screen hidden">
+            <header class="header">
+                <div class="header-content">
+                    <h1>StudyHelper</h1>
+                    <div class="header-actions">
+                        <span id="student-name" class="user-name"></span>
+                        <button class="btn btn-outline" onclick="openCalendlyPopup()">Book Meeting</button>
+                        <button class="btn btn-secondary" onclick="logout()">Sign Out</button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" onclick="showTab('requests')">My Requests</button>
+                    <button class="tab-btn" onclick="showTab('new-request')">New Request</button>
+                    <button class="tab-btn" onclick="showTab('calendar')">Book Meeting</button>
+                </div>
+
+                <!-- Requests Tab -->
+                <div id="requests-tab" class="tab-content active">
+                    <div class="requests-header">
+                        <h2>My Requests</h2>
+                        <div class="requests-stats">
+                            <div class="stat-card">
+                                <span class="stat-number" id="total-requests">0</span>
+                                <span class="stat-label">Total</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="pending-requests">0</span>
+                                <span class="stat-label">Pending</span>
+                            </div>
+                            <div class="stat-card">
+                                <span class="stat-number" id="completed-requests">0</span>
+                                <span class="stat-label">Completed</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="requests-list" class="requests-list"></div>
+                </div>
+
+                <!-- New Request Tab -->
+                <div id="new-request-tab" class="tab-content">
+                    <div class="request-form-container">
+                        <h2>Request Custom Study Material</h2>
+                        <form id="request-form" class="request-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="subject">Subject</label>
+                                    <select id="subject" name="subject" required>
+                                        <option value="">Select Subject</option>
+                                        <option value="mathematics">Mathematics</option>
+                                        <option value="science">Science</option>
+                                        <option value="english">English</option>
+                                        <option value="history">History</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="material-type">Material Type</label>
+                                    <select id="material-type" name="materialType" required>
+                                        <option value="">Select Type</option>
+                                        <option value="quiz">Quiz</option>
+                                        <option value="worksheet">Worksheet</option>
+                                        <option value="practice-test">Practice Test</option>
+                                        <option value="study-guide">Study Guide</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="difficulty">Difficulty Level</label>
+                                    <select id="difficulty" name="difficulty" required>
+                                        <option value="">Select Difficulty</option>
+                                        <option value="beginner">Beginner</option>
+                                        <option value="intermediate">Intermediate</option>
+                                        <option value="advanced">Advanced</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="due-date">Due Date</label>
+                                    <input type="date" id="due-date" name="dueDate" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="topic">Topic/Chapter</label>
+                                <input type="text" id="topic" name="topic" placeholder="e.g., Quadratic Equations, Cell Biology" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="requirements">Additional Requirements</label>
+                                <textarea id="requirements" name="requirements" rows="4" placeholder="Any specific requirements, learning objectives, or areas to focus on..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Submit Request</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Calendar Tab -->
+                <div id="calendar-tab" class="tab-content">
+                    <div class="calendar-container">
+                        <h2>Book a Meeting</h2>
+                        <p>Schedule a one-on-one session to discuss your learning goals and get personalized help.</p>
+                        <div id="calendly-embed" class="calendly-embed"></div>
+                        <div class="calendar-fallback">
+                            <button class="btn btn-primary" onclick="openCalendlyPopup()">Open Booking Calendar</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Owner Dashboard -->
+        <div id="owner-dashboard" class="screen hidden">
+            <header class="header">
+                <div class="header-content">
+                    <h1>StudyHelper - Owner Dashboard</h1>
+                    <div class="header-actions">
+                        <span id="owner-name" class="user-name"></span>
+                        <button class="btn btn-secondary" onclick="logout()">Sign Out</button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <span class="stat-number" id="owner-total-requests">0</span>
+                        <span class="stat-label">Total Requests</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="owner-pending-requests">0</span>
+                        <span class="stat-label">Pending</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="owner-in-progress-requests">0</span>
+                        <span class="stat-label">In Progress</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="owner-completed-requests">0</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+
+                <div class="requests-management">
+                    <div class="requests-header">
+                        <h2>Student Requests</h2>
+                        <div class="filter-controls">
+                            <select id="status-filter" onchange="filterRequests()">
+                                <option value="all">All Requests</option>
+                                <option value="pending">Pending</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="owner-requests-list" class="owner-requests-list"></div>
+                </div>
+            </main>
+        </div>
+
+        <!-- File Upload Modal -->
+        <div id="upload-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Upload Files</h3>
+                    <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">📁</div>
+                        <p>Drag and drop files here or click to browse</p>
+                        <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                    </div>
+                    <div id="upload-progress" class="upload-progress hidden">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <p id="upload-status">Uploading...</p>
+                    </div>
+                    <div id="uploaded-files" class="uploaded-files"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
+                    <button class="btn btn-primary" id="upload-btn" onclick="uploadFiles()">Upload Files</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://assets.calendly.com/assets/external/widget.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
